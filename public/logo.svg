@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0D1B2A"/>
+      <stop offset="100%" stop-color="#1B263B"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F5B872"/>
+      <stop offset="50%" stop-color="#E0A458"/>
+      <stop offset="100%" stop-color="#C89245"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="256" height="256" rx="56" fill="url(#bg)"/>
+  
+  <!-- Two interlocking rings - representing partnership -->
+  <g fill="none" stroke="url(#gold)" stroke-width="16" stroke-linecap="round">
+    <!-- Left ring -->
+    <circle cx="100" cy="128" r="48"/>
+    <!-- Right ring -->
+    <circle cx="156" cy="128" r="48"/>
+  </g>
+  
+  <!-- Connection dots -->
+  <circle cx="128" cy="128" r="12" fill="url(#gold)"/>
+</svg>
