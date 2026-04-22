@@ -57,11 +57,19 @@ const messageSchema = new mongoose.Schema({
 const Message = mongoose.model('Message', messageSchema);
 
 // ======== DEAL MODEL ========
+const dealTermsSchema = new mongoose.Schema({
+  type: { type: String, default: 'revenue_share' },
+  revenueShare: Number,
+  monthlyRetainer: Number,
+  projectFee: Number,
+  description: String
+}, { _id: false });
+
 const dealSchema = new mongoose.Schema({
   providerId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   seekerId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   status: { type: String, enum: ['draft', 'negotiating', 'agreed', 'active', 'completed', 'cancelled'], default: 'draft' },
-  terms: { type: String, revenueShare: Number, monthlyRetainer: Number, projectFee: Number, description: String }
+  terms: dealTermsSchema
 }, { timestamps: true });
 const Deal = mongoose.model('Deal', dealSchema);
 
@@ -272,7 +280,21 @@ app.post('/api/messages/conversations/:id/messages', auth, async (req, res) => {
 // ======== DEAL ROUTES ========
 app.post('/api/deals', auth, async (req, res) => {
   try {
-    const deal = new Deal(req.body);
+    const { providerId, seekerId, status, terms } = req.body;
+    const otherUserId = providerId === req.userId ? seekerId : providerId;
+    
+    const connection = await Connection.findOne({
+      $or: [
+        { requesterId: req.userId, recipientId: otherUserId, status: 'accepted' },
+        { requesterId: otherUserId, recipientId: req.userId, status: 'accepted' }
+      ]
+    });
+    
+    if (!connection) {
+      return res.status(403).json({ message: 'You can only create deals with connected partners' });
+    }
+    
+    const deal = new Deal({ providerId, seekerId, status, terms });
     await deal.save();
     res.status(201).json(deal);
   } catch (e) { res.status(500).json({ message: e.message }); }
